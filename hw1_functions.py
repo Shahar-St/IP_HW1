@@ -37,7 +37,7 @@ def minkowski2Dist(im1, im2):
 
 
 def meanSqrDist(im1, im2):
-    # TODO: implement function - one line
+    d = np.mean(np.power(np.subtract(im1, im2), 2))
     return d
 
 
