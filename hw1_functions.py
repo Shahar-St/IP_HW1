@@ -29,7 +29,10 @@ def showMapping(old_range, a, b):
 
 
 def minkowski2Dist(im1, im2):
-    # TODO: implement function
+    hist1 = np.histogram(im1, bins=256, range=(0, 255), normed=True)
+    hist2 = np.histogram(im2, bins=256, range=(0, 255), normed=True)
+    p = 1
+    d = np.power(np.sum(np.power(np.abs(hist1, hist2), p)), 1/p)
     return d
 
 
