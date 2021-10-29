@@ -42,8 +42,11 @@ def meanSqrDist(im1, im2):
 
 
 def sliceMat(im):
-    # TODO: implement function
-    return Slices
+    slices = np.full((im.size, 255), False)
+    for color in range(255):
+        mask = im == color
+        slices = slices or mask
+    return slices
 
 
 def SLTmap(im1, im2):
