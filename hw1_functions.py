@@ -4,12 +4,15 @@ import matplotlib.pyplot as plt
 
 
 def print_IDs():
-    # print("123456789")
-    print("123456789+987654321\n")
+    print("305237257+987654321\n")
 
 
-def contrastEnhance(im, range):
-    # TODO: implement function
+def contrastEnhance(im, linear_params):
+    a = linear_params[0]
+    b = linear_params[1]
+    nim = np.copy(im)
+    for (x, y), value in np.ndenumerate(im):
+        nim[x][y] = a * value + b
     return nim, a, b
 
 
