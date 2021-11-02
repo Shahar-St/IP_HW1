@@ -1,8 +1,7 @@
 from hw1_functions import *
-
+from cv2 import cv2
 
 if __name__ == "__main__":
-    # feel free to add/remove/edit lines
 
     path_image = r'Images\darkimage.tif'
     darkimg = cv2.imread(path_image)
@@ -12,7 +11,7 @@ if __name__ == "__main__":
     print_IDs()
 
     print("a ------------------------------------\n")
-    enhanced_img, a, b = contrastEnhance()#add parameters
+    enhanced_img, a, b = contrastEnhance(darkimg_gray, [0, 255])
 
     # display images
     plt.figure()
@@ -35,7 +34,7 @@ if __name__ == "__main__":
     # print a,b
     print("enhancing an already enhanced image\n")
     print("a = {}, b = {}\n".format(a, b))
-    
+
     # TODO: display the difference between the two image (Do not simply display both images)
 
 
@@ -60,7 +59,7 @@ if __name__ == "__main__":
     plt.title("Minkowski distance as function of contrast")
 
     print("d ------------------------------------\n")
-    
+
 
     d = # computationally prove that sliceMat(im) * [0:255] == im
     print("".format(d))
@@ -68,7 +67,7 @@ if __name__ == "__main__":
 
 
     print("e ------------------------------------\n")
-    
+
     d = # computationally compare
     print("sum of diff between image and slices*[0..255] = {}".format(d))
 

@@ -1,4 +1,3 @@
-import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -7,9 +6,16 @@ def print_IDs():
     print("305237257+987654321\n")
 
 
-def contrastEnhance(im, linear_params):
-    a = linear_params[0]
-    b = linear_params[1]
+def contrastEnhance(im, im_range):
+    min_im_val = np.min(im)
+    max_im_val = np.max(im)
+
+    min_target_val = im_range[0]
+    max_target_val = im_range[1]
+
+    a = (max_target_val - min_target_val) / (max_im_val - min_im_val)
+    b = min_target_val - (max_im_val * a)
+
     nim = np.copy(im)
     for (x, y), value in np.ndenumerate(im):
         nim[x][y] = a * value + b
