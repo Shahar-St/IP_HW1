@@ -1,3 +1,5 @@
+import numpy as np
+
 from hw1_functions import *
 from cv2 import cv2
 
@@ -90,7 +92,7 @@ if __name__ == "__main__":
     plt.subplot(1, 2, 2)
     plt.imshow(TMim, cmap='gray', vmin=0, vmax=255)
     plt.title("tone mapped")
-    plt.show()
+
     print("f ------------------------------------\n")
     negative_im = sltNegative(darkimg_gray)
     plt.figure()
@@ -109,20 +111,20 @@ if __name__ == "__main__":
 
     print("h ------------------------------------\n")
     im1 = lena_gray
-    im2 = darkimg
+    im2 = darkimg_gray
     SLTim, _ = SLTmap(im1, im2)
 
     # then print
     plt.figure()
     plt.subplot(1, 3, 1)
-    plt.imshow(im1)
+    plt.imshow(im1, cmap='gray', vmin=0, vmax=255)
     plt.title("original image")
     plt.subplot(1, 3, 2)
     plt.imshow(SLTim, cmap='gray', vmin=0, vmax=255)
     plt.title("tone mapped")
     plt.subplot(1, 3, 3)
     plt.imshow(im2, cmap='gray', vmin=0, vmax=255)
-    plt.title("tone mapped")
+    plt.title("target image")
 
     d1 = meanSqrDist(im1, im2)  # mean sqr dist between im1 and im2
     d2 = meanSqrDist(SLTim, im2)  # mean sqr dist between mapped image and im2
@@ -134,10 +136,10 @@ if __name__ == "__main__":
         print("not smaller!")
 
     print("i ------------------------------------\n")
-    # prove comutationally
-    SLTmap(im1, im2)
-    SLTmap(im2, im2)
-    d = 7 # TODO:
+    # prove computationally
+    slt_1_2, _ = SLTmap(im1, im2)
+    slt_2_1, _ = SLTmap(im2, im1)
+    d = np.all(slt_1_2 == slt_2_1)
     print(" {}".format(d))
 
     plt.show()

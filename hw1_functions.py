@@ -70,12 +70,13 @@ def SLTmap(im1, im2):
         return -1
 
     im_slm = sliceMat(im1)
-    shaped_im2 = np.squeeze(im2.reshape((im2.size, 1)))
 
-    TM = np.zeros(256)
+    shaped_im2 = im2.reshape(im2.size)
+
+    TM = np.zeros(256, dtype=int)
     color = 0
     for col_color in im_slm.T:
-        target_col_sum = np.matmul(col_color, shaped_im2)
+        target_col_sum = np.matmul(col_color.astype(int), shaped_im2)
         if target_col_sum != 0:
             target_col_mean = (target_col_sum / col_color.sum()).astype(np.int)
             TM[color] = target_col_mean
@@ -86,7 +87,7 @@ def SLTmap(im1, im2):
 
 def mapImage(im, tm):
     slices = sliceMat(im)
-    return np.reshape(np.matmul(slices, tm), (np.shape(im)[0], np.shape(im)[1]))
+    return np.reshape(np.matmul(slices.astype(int), tm), (np.shape(im)[0], np.shape(im)[1]))
 
 
 def sltNegative(im):
@@ -97,7 +98,7 @@ def sltThreshold(im, thresh):
     TM = np.arange(256)
     TM[:thresh] = 0
     TM[thresh:] = 255
-    return mapImage(im, np.arange(255)[:thresh])
+    return mapImage(im, TM)
 
 
 def isSameSize(im1, im2):
