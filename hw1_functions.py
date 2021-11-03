@@ -35,8 +35,6 @@ def showMapping(old_range, a, b):
 
 
 def minkowski2Dist(im1, im2):
-    # if not isSameSize(im1, im2):
-    #     return -1
     hist1, _ = np.histogram(im1, bins=256, range=(0, 255), density=True)
     hist2, _ = np.histogram(im2, bins=256, range=(0, 255), density=True)
 
@@ -50,14 +48,11 @@ def minkowski2Dist(im1, im2):
 
 
 def meanSqrDist(im1, im2):
-    if not isSameSize(im1, im2):
-        return -1
-    d = np.mean(np.power(np.subtract(im1.astype(float), im2.astype(float)), 2))
-    return d
+    return np.mean(np.power(np.subtract(im1.astype(float), im2.astype(float)), 2))
 
 
 def sliceMat(im):
-    slices = []
+    slices = []  # todo
     im = np.squeeze(im.reshape((im.size, 1)))
     for color in range(256):
         mask = (im == color)
@@ -66,19 +61,16 @@ def sliceMat(im):
 
 
 def SLTmap(im1, im2):
-    if not isSameSize(im1, im2):
-        return -1
 
-    im_slm = sliceMat(im1)
-
+    im1_slice = sliceMat(im1)
     shaped_im2 = im2.reshape(im2.size)
 
     TM = np.zeros(256, dtype=int)
     color = 0
-    for col_color in im_slm.T:
+    for col_color in im1_slice.T:
         target_col_sum = np.matmul(col_color.astype(int), shaped_im2)
         if target_col_sum != 0:
-            target_col_mean = (target_col_sum / col_color.sum()).astype(np.int)
+            target_col_mean = round(target_col_sum / col_color.sum())
             TM[color] = target_col_mean
         color += 1
 
@@ -100,10 +92,3 @@ def sltThreshold(im, thresh):
     TM[thresh:] = 255
     return mapImage(im, TM)
 
-
-def isSameSize(im1, im2):
-    if np.shape(im1)[0] != np.shape(im2)[0] or np.shape(im1)[1] != np.shape(im2)[1]:
-        print("images need to be the same size!")
-        return 0
-
-    return 1

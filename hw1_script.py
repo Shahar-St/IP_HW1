@@ -1,5 +1,3 @@
-import numpy as np
-
 from hw1_functions import *
 from cv2 import cv2
 
@@ -19,7 +17,7 @@ if __name__ == "__main__":
     # display images
     plt.figure()
     plt.subplot(1, 2, 1)
-    plt.imshow(darkimg)
+    plt.imshow(darkimg_gray, cmap='gray', vmin=0, vmax=255)
     plt.title('original')
     plt.subplot(1, 2, 2)
     plt.imshow(enhanced_img, cmap='gray', vmin=0, vmax=255)
@@ -29,17 +27,14 @@ if __name__ == "__main__":
     print("a = {}, b = {}\n".format(a, b))
 
     # display mapping
-    hist, _ = np.histogram(darkimg_gray, bins=256, range=(0, 255))
-    hist = hist.astype(float)
-    darkimg_gray_RangeList = [np.min(darkimg), np.max(darkimg)]
-    showMapping(darkimg_gray_RangeList, a, b)  # add parameters
+    darkimg_gray_RangeList = [np.min(darkimg_gray), np.max(darkimg_gray)]
+    showMapping(darkimg_gray_RangeList, a, b)
 
     print("b ------------------------------------\n")
     enhanced2_img, a, b = contrastEnhance(enhanced_img, maxRangeList)
     # print a,b
     print("enhancing an already enhanced image\n")
     print("a = {}, b = {}\n".format(a, b))
-
     d = minkowski2Dist(enhanced_img, enhanced2_img)
     print("Minkowski dist between enhanced image and its enhancement (expected: 0)")
     print("dist = {}\n".format(d))
@@ -51,16 +46,15 @@ if __name__ == "__main__":
     mdist = minkowski2Dist(darkimg_gray, darkimg_gray)
     print("Minkowski dist between image and itself\n")
     print("d = {}\n".format(mdist))
-
     # implement the loop that calculates minkowski distance as function of increasing contrast
     darkimg_gray_minRange = darkimg_gray_RangeList[0]
     step = (darkimg_gray_RangeList[1] - darkimg_gray_RangeList[0]) / 20
 
     contrasts, dists = [], []
     for k in range(1, 21):
-        contrast = darkimg_gray_minRange + round(k * step)
+        contrast = int(k * step)
         contrasts.append(contrast)
-        img_enhanced, _, _ = contrastEnhance(darkimg_gray, [darkimg_gray_minRange, contrast])
+        img_enhanced, _, _ = contrastEnhance(darkimg_gray, [darkimg_gray_minRange, darkimg_gray_minRange + contrast])
         dists.append(minkowski2Dist(darkimg_gray, img_enhanced))
 
     plt.figure()
@@ -74,20 +68,19 @@ if __name__ == "__main__":
     check_im = np.matmul(sliceMat(darkimg_gray), np.transpose(np.arange(256)))
     check_im = check_im.reshape(np.shape(darkimg_gray)[0], np.shape(darkimg_gray)[1])
     d = minkowski2Dist(darkimg_gray, check_im)
-    print("Minkowski distance: {}".format(d))
+    print("Minkowski distance between im and sliceMat(im) * [0:255]  {}".format(d))
     print(f"sliceMat(im) * [0:255] == im ? {np.all(check_im == darkimg_gray)}")
 
     print("e ------------------------------------\n")
-
     max_contrast_darkimg_gray, _, _ = contrastEnhance(darkimg_gray, maxRangeList)  # computationally compare
     TMim, TM = SLTmap(darkimg_gray, max_contrast_darkimg_gray)
-    d = minkowski2Dist(check_im, max_contrast_darkimg_gray)
-    print("sum of diff between image and slices*[0..255] = {}".format(d))
+    d = minkowski2Dist(np.matmul(sliceMat(darkimg_gray), TM), max_contrast_darkimg_gray)
+    print("sum of diff between image and slices * TM = {}".format(d))
 
     # then display
     plt.figure()
     plt.subplot(1, 2, 1)
-    plt.imshow(darkimg)
+    plt.imshow(darkimg_gray, cmap='gray', vmin=0, vmax=255)
     plt.title("original image")
     plt.subplot(1, 2, 2)
     plt.imshow(TMim, cmap='gray', vmin=0, vmax=255)
@@ -100,10 +93,10 @@ if __name__ == "__main__":
     plt.title("negative image using SLT")
 
     print("g ------------------------------------\n")
-    thresh = 120  # play with it to see changes
+    thresh = 120
     lena = cv2.imread(r"Images\\RealLena.tif")
     lena_gray = cv2.cvtColor(lena, cv2.COLOR_BGR2GRAY)
-    thresh_im = sltThreshold(lena_gray, thresh)  # add parameters
+    thresh_im = sltThreshold(lena_gray, thresh)
 
     plt.figure()
     plt.imshow(thresh_im, cmap='gray', vmin=0, vmax=255)
@@ -139,7 +132,17 @@ if __name__ == "__main__":
     # prove computationally
     slt_1_2, _ = SLTmap(im1, im2)
     slt_2_1, _ = SLTmap(im2, im1)
-    d = np.all(slt_1_2 == slt_2_1)
-    print(" {}".format(d))
+    d = minkowski2Dist(slt_1_2, slt_2_1)
+    print("Minkowski distance between SLTmap(im1, im2) and SLTmap(im2, im1) {}".format(d))
+    print("is SLTmap symmetric ? {}".format(np.all(slt_1_2 == slt_2_1)))
+
+    # then display
+    plt.figure()
+    plt.subplot(1, 2, 1)
+    plt.imshow(slt_1_2, cmap='gray', vmin=0, vmax=255)
+    plt.title("SLTmap(im1, im2)")
+    plt.subplot(1, 2, 2)
+    plt.imshow(slt_2_1, cmap='gray', vmin=0, vmax=255)
+    plt.title("SLTmap(im2, im1)")
 
     plt.show()
