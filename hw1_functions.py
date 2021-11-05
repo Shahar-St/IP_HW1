@@ -52,7 +52,7 @@ def meanSqrDist(im1, im2):
 
 
 def sliceMat(im):
-    slices = []  # todo
+    slices = []
     im = np.squeeze(im.reshape((im.size, 1)))
     for color in range(256):
         mask = (im == color)

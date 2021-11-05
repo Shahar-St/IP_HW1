@@ -74,7 +74,9 @@ if __name__ == "__main__":
     print("e ------------------------------------\n")
     max_contrast_darkimg_gray, _, _ = contrastEnhance(darkimg_gray, maxRangeList)  # computationally compare
     TMim, TM = SLTmap(darkimg_gray, max_contrast_darkimg_gray)
-    d = minkowski2Dist(np.matmul(sliceMat(darkimg_gray), TM), max_contrast_darkimg_gray)
+    slc_mul_TM = np.matmul(sliceMat(darkimg_gray), np.transpose(TM))
+    slc_mul_TM = slc_mul_TM.reshape(np.shape(darkimg_gray)[0], np.shape(darkimg_gray)[1])
+    d = minkowski2Dist(slc_mul_TM, max_contrast_darkimg_gray)
     print("sum of diff between image and slices * TM = {}".format(d))
 
     # then display
